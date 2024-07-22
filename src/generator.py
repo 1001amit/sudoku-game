@@ -37,7 +37,7 @@ def create_puzzle(grid, difficulty='easy'):
         attempts = 5
     elif difficulty == 'medium':
         attempts = 10
-    else:  # 'hard'
+    elif difficulty == 'hard':
         attempts = 15
 
     while attempts > 0:
