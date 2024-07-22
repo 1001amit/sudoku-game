@@ -1,38 +1,44 @@
 import tkinter as tk
-from generator import create_puzzle
+from generator import create_puzzle, generate_complete_grid
 from solver import solve
 
-def create_gui():
-    root = tk.Tk()
-    root.title("Sudoku")
-
-    # Create Sudoku grid in the GUI
-    cells = [[tk.Entry(root, width=5, font=('Arial', 18), justify='center') for _ in range(9)] for _ in range(9)]
-    for i in range(9):
-        for j in range(9):
-            cells[i][j].grid(row=i, column=j)
-
-    def new_game():
-        grid = create_puzzle(generate_complete_grid(), difficulty='easy')
+class SudokuGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Sudoku")
+        self.cells = [[tk.Entry(root, width=5, font=('Arial', 18), justify='center') for _ in range(9)] for _ in range(9)]
         for i in range(9):
             for j in range(9):
-                if grid[i][j] != 0:
-                    cells[i][j].insert(0, str(grid[i][j]))
-                    cells[i][j].config(state='disabled')
-                else:
-                    cells[i][j].config(state='normal')
-                    cells[i][j].delete(0, tk.END)
+                self.cells[i][j].grid(row=i, column=j)
 
-    def solve_game():
-        grid = [[int(cells[i][j].get()) if cells[i][j].get() else 0 for j in range(9)] for i in range(9)]
+        self.create_buttons()
+        self.new_game()
+
+    def create_buttons(self):
+        tk.Button(self.root, text="New Game", command=self.new_game).grid(row=9, column=0, columnspan=5)
+        tk.Button(self.root, text="Solve", command=self.solve_game).grid(row=9, column=5, columnspan=4)
+
+    def new_game(self):
+        self.grid = create_puzzle(generate_complete_grid(), difficulty='easy')
+        for i in range(9):
+            for j in range(9):
+                self.cells[i][j].delete(0, tk.END)
+                if self.grid[i][j] != 0:
+                    self.cells[i][j].insert(0, str(self.grid[i][j]))
+                    self.cells[i][j].config(state='disabled')
+                else:
+                    self.cells[i][j].config(state='normal')
+
+    def solve_game(self):
+        grid = [[int(self.cells[i][j].get()) if self.cells[i][j].get() else 0 for j in range(9)] for i in range(9)]
         solve(grid)
         for i in range(9):
             for j in range(9):
-                cells[i][j].delete(0, tk.END)
-                cells[i][j].insert(0, str(grid[i][j]))
+                self.cells[i][j].delete(0, tk.END)
+                self.cells[i][j].insert(0, str(grid[i][j]))
 
-    tk.Button(root, text="New Game", command=new_game).grid(row=9, column=0, columnspan=5)
-    tk.Button(root, text="Solve", command=solve_game).grid(row=9, column=5, columnspan=4)
-
+def create_gui():
+    root = tk.Tk()
+    app = SudokuGUI(root)
     root.mainloop()
 

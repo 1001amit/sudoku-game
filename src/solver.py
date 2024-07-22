@@ -20,4 +20,12 @@ def find_empty_location(grid):
     return None
 
 def is_safe(grid, row, col, num):
+    if num in grid[row]:
+        return False
+    if num in grid[:, col]:
+        return False
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    if num in grid[start_row:start_row+3, start_col:start_col+3]:
+        return False
     return True
+
